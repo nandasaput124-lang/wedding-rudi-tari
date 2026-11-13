@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Wedding of Rudi & Tari</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@500;600;700;800&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Floating Audio Element -->
+  <audio id="bgmAudio" loop preload="auto">
+    <source src="assets/music.mp4" type="audio/mp4">
+    <source src="ssstik.io_1794579499983.mp4" type="video/mp4">
+  </audio>
+
+  <!-- Canvas for Floating Petals and Sparkles -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- ============================================== -->
+  <!-- 1. TAMPILAN AWAL: AMPLOP INTERAKTIF            -->
+  <!-- ============================================== -->
+  <section id="envelopeScreen" class="envelope-screen">
+    <div class="envelope-container">
+      
+      <!-- Envelope Background Glow -->
+      <div class="envelope-glow"></div>
+
+      <!-- Main Envelope 3D Object -->
+      <div class="envelope" id="envelopeObj" onclick="triggerOpenEnvelope()">
+        
+        <!-- Flap (Penutup Segitiga di Bagian Atas Amplop) -->
+        <div class="envelope-flap" id="envelopeFlap"></div>
+
+        <!-- Envelope Body (Clean Dark Green Face) -->
+        <div class="envelope-pocket">
+          <div class="envelope-decor-border"></div>
+
+          <!-- 1. Golden Wax Seal (Sealing the Flap at the Top) -->
+          <div class="wax-seal-wrapper" id="waxSealWrapper" onclick="event.stopPropagation(); triggerOpenEnvelope();">
+            <div class="wax-seal-body">
+              <svg class="wax-seal-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="goldWaxGrad" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#fff9db"/>
+                    <stop offset="25%" stop-color="#f5cc6b"/>
+                    <stop offset="70%" stop-color="#b88528"/>
+                    <stop offset="100%" stop-color="#5c3805"/>
+                  </radialGradient>
+                  <filter id="sealEmboss" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="1.5" stdDeviation="0.6" flood-color="#ffffff" flood-opacity="0.6"/>
+                    <feDropShadow dx="0" dy="-1" stdDeviation="0.6" flood-color="#211200" flood-opacity="0.8"/>
+                  </filter>
+                </defs>
+                <!-- Outer Beveled Wax Edge -->
+                <circle cx="50" cy="50" r="48" fill="#3d2303"/>
+                <circle cx="50" cy="50" r="46" fill="url(#goldWaxGrad)"/>
+                <!-- Concentric Golden Circles -->
+                <circle cx="50" cy="50" r="39" fill="none" stroke="#fff4cf" stroke-width="1.8" stroke-dasharray="4 3"/>
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#5c3805" stroke-width="0.8" opacity="0.5"/>
+                
+                <!-- Left Laurel Branch -->
+                <path d="M 20 32 C 16 42, 16 58, 20 68 C 21 64, 20 58, 21 44 Z" fill="#3d2303"/>
+                <circle cx="17" cy="38" r="2.2" fill="#3d2303"/>
+                <circle cx="15" cy="50" r="2.2" fill="#3d2303"/>
+                <circle cx="17" cy="62" r="2.2" fill="#3d2303"/>
+
+                <!-- Right Laurel Branch -->
+                <path d="M 80 32 C 84 42, 84 58, 80 68 C 79 64, 80 58, 79 44 Z" fill="#3d2303"/>
+                <circle cx="83" cy="38" r="2.2" fill="#3d2303"/>
+                <circle cx="85" cy="50" r="2.2" fill="#3d2303"/>
+                <circle cx="83" cy="62" r="2.2" fill="#3d2303"/>
+
+                <!-- Top Royal Star -->
+                <polygon points="50,24 51.8,28.5 56.5,28.5 52.8,31.2 54.2,35.8 50,33 45.8,35.8 47.2,31.2 43.5,28.5 48.2,28.5" fill="#3d2303"/>
+
+                <!-- Monogram "R & T" Centered with Generous Spacing -->
+                <text x="50" y="57" font-family="'Cinzel', Georgia, serif" font-size="18" font-weight="900" fill="#2b1602" text-anchor="middle" letter-spacing="2" filter="url(#sealEmboss)">R &amp; T</text>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- 2. Recipient Name Badge (White Card - Centered Below Seal) -->
+          <div class="recipient-badge" id="recipientBadge">
+            <p class="invitation-for">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+            <h2 class="guest-name" id="guestNameDisplay">Tamu Undangan</h2>
+            <p class="guest-note">Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir di hari bahagia kami.</p>
+          </div>
+
+          <!-- 3. Prominent Action Button -->
+          <div class="envelope-action-wrap">
+            <button class="btn-open-card-pill" id="btnOpenEnvelope" aria-label="Buka Undangan" type="button" onclick="event.stopPropagation(); triggerOpenEnvelope();">
+              <i class="fa-solid fa-envelope-open-text"></i> BUKA UNDANGAN
+            </button>
+          </div>
+
+        </div> <!-- /envelope-pocket -->
+
+      </div> <!-- /envelope -->
+
+      <!-- Quick Option to test/change guest name -->
+      <div class="envelope-footer-tools">
+        <button id="btnCustomGuest" class="btn-ghost-tool" title="Ubah Nama Tamu untuk Tautan" type="button">
+          <i class="fa-solid fa-user-pen"></i> Ubah Nama Tamu
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 2. LAYAR UTAMA: ANIMASI SINEMATIK SESUAI VIDEO -->
+  <!-- ============================================== -->
+  <main id="mainExperience" class="main-experience hidden">
+
+    <!-- Mobile Frame Container (Responsive 9:16 or Fullscreen) -->
+    <div class="phone-stage">
+
+      <!-- Panoramic Camera Viewport -->
+      <div class="viewport" id="sceneViewport">
+
+        <!-- Scene Content (Moving Camera Target Layer) -->
+        <div class="scene-layer" id="sceneLayer">
+          <!-- Base Illustration Image (Rudi & Tari 3D Cartoon Picnic) -->
+          <img src="assets/Piknik Pernikahan Tradisional yang Romantis.png" alt="Rudi dan Tari 3D Cartoon Wedding" class="scene-illustration" id="coupleSceneImg">
+        </div> <!-- /scene-layer -->
+
+        <!-- Animated Flying White Dove with Ribbon Banner (Overlaid) -->
+        <div class="dove-actor" id="doveActor">
+          <div class="dove-bird">
+            <svg class="dove-svg" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 50 45 C 40 40, 25 35, 10 20 C 25 22, 38 28, 45 35 C 38 22, 28 8, 15 0 C 35 3, 50 20, 56 32 C 65 30, 80 32, 92 40 C 97 44, 98 48, 92 50 C 85 52, 70 48, 62 50 C 58 55, 52 65, 48 78 C 45 70, 48 58, 50 45 Z" fill="#ffffff" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.25))"/>
+              <circle cx="89" cy="44" r="1.5" fill="#333333"/>
+              <polygon points="95,44 100,47 94,49" fill="#ffb703"/>
+            </svg>
+          </div>
+          <div class="dove-banner">
+            <div class="banner-text">
+              <span class="banner-small">You're invited to</span>
+              <span class="banner-title">The Wedding of</span>
+              <strong class="banner-names">Rudi &amp; Tari</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Narrative Cards Layer (Clean Motion Overlays) -->
+        <div class="narrative-cards-layer">
+
+          <!-- Card Scene 1: Mempelai Wanita (Tari) -->
+          <div class="narrative-card card-tari" id="cardTari">
+            <div class="card-avatar-badge">
+              <img src="assets/bride_tari.jpg" alt="Tari Avatar">
+            </div>
+            <div class="card-glass-body">
+              <span class="card-sub">The Bride</span>
+              <h2 class="card-title">Tari</h2>
+              <p class="card-fullname">Saputri Lestari</p>
+              <div class="card-line"></div>
+              <p class="card-parents">
+                Putri tercinta dari:<br>
+                <strong>Bapak Abdullah</strong> &amp; <strong>Ibu Ratna</strong>
+              </p>
+              <div class="card-social">
+                <a href="#" class="social-tag" onclick="return false;"><i class="fa-brands fa-instagram"></i> @tari.lestari</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Scene 2: Mempelai Pria (Rudi) -->
+          <div class="narrative-card card-rudi" id="cardRudi">
+            <div class="card-avatar-badge">
+              <img src="assets/groom_rudi.jpg" alt="Rudi Avatar">
+            </div>
+            <div class="card-glass-body">
+              <span class="card-sub">The Groom</span>
+              <h2 class="card-title">Rudi</h2>
+              <p class="card-fullname">Hasrudin</p>
+              <div class="card-line"></div>
+              <p class="card-parents">
+                Putra tercinta dari:<br>
+                <strong>Bapak Opa</strong> &amp; <strong>Ibu Oma</strong>
+              </p>
+              <div class="card-social">
+                <a href="#" class="social-tag" onclick="return false;"><i class="fa-brands fa-instagram"></i> @rudi_H</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Scene 3: Akad & Resepsi (Surat Cinta Romantis dengan Animasi Buka Amplop) -->
+          <div class="narrative-card card-event" id="cardEvent">
+            <div class="love-envelope-stage">
+              
+              <!-- Mini Love Envelope 3D Body -->
+              <div class="mini-love-envelope" id="miniLoveEnvelope">
+                
+                <!-- Flap Segitiga Amplop Mini -->
+                <div class="mini-env-flap" id="miniEnvFlap">
+                  <div class="heart-seal-stamp" id="heartSealStamp">
+                    <span class="heart-emoji">❤️</span>
+                  </div>
+                </div>
+
+                <!-- Pocket Depan Amplop Mini -->
+                <div class="mini-env-pocket">
+                  <div class="mini-env-stamp-badge">
+                    <i class="fa-solid fa-stamp"></i>
+                    <span>WALIMATUL 'URS</span>
+                  </div>
+                </div>
+
+                <!-- Isi Surat Akad & Resepsi (Meluncur Keluar Saat Amplop Terbuka) -->
+                <div class="mini-env-letter-card">
+                  <div class="card-pink-body">
+                    <div class="rings-ornament">
+                      <i class="fa-solid fa-ring"></i><i class="fa-solid fa-ring"></i>
+                    </div>
+                    <h3 class="event-title">Akad &amp; Resepsi</h3>
+                    <p class="event-day"><i class="fa-regular fa-calendar-check"></i> Minggu, 18 Januari 2026</p>
+                    <div class="event-schedules">
+                      <div class="schedule-item">
+                        <span class="sch-name">Akad Nikah</span>
+                        <span class="sch-time">08.00 - 09.30 WIB</span>
+                      </div>
+                      <div class="schedule-divider"></div>
+                      <div class="schedule-item">
+                        <span class="sch-name">Resepsi</span>
+                        <span class="sch-time">10.00 - 13.00 WIB</span>
+                      </div>
+                    </div>
+                    <div class="mini-countdown" id="eventCountdown">
+                      <div class="cd-box"><span id="cdDays">00</span><small>Hari</small></div>
+                      <div class="cd-box"><span id="cdHours">00</span><small>Jam</small></div>
+                      <div class="cd-box"><span id="cdMins">00</span><small>Mnt</small></div>
+                      <div class="cd-box"><span id="cdSecs">00</span><small>Dtk</small></div>
+                    </div>
+                    <button class="btn-card-action" id="btnAddToCalendar">
+                      <i class="fa-solid fa-calendar-plus"></i> Simpan ke Kalender
+                    </button>
+                  </div>
+                </div>
+
+              </div> <!-- /mini-love-envelope -->
+
+            </div>
+          </div>
+
+          <!-- Card Scene 4: Lokasi Acara (Buku Catatan Spiral Sesuai Foto Piknik) -->
+          <div class="narrative-card card-location" id="cardLocation">
+            <div class="spiral-notebook">
+              
+              <!-- Spiral Wire Rings at the Left Margin -->
+              <div class="notebook-spiral-spine">
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+                <span class="spiral-loop"></span>
+              </div>
+
+              <!-- Notebook Page Content -->
+              <div class="notebook-page-inner">
+                
+                <!-- Washi Tape / Paperclip on Corner -->
+                <div class="washi-tape-decor">LOKASI ACARA</div>
+
+                <!-- Polaroid Photo Attached to Notebook -->
+                <div class="notebook-polaroid-attachment">
+                  <div class="polaroid-photo-frame">
+                    <div class="polaroid-img-mockup">
+                      <i class="fa-solid fa-tree"></i>
+                      <i class="fa-solid fa-location-dot map-pin-pop"></i>
+                      <i class="fa-solid fa-mountain-sun"></i>
+                    </div>
+                    <span class="polaroid-caption">Pemana, NTT</span>
+                  </div>
+                </div>
+
+                <!-- Handwritten / Lined Notes Area -->
+                <div class="notebook-notes">
+                  <h3 class="notebook-venue-name">Lapangan Desa Pemana</h3>
+                  <p class="notebook-sub-venue"><i class="fa-solid fa-map-pin"></i> Desa Pemana, Kec. Alok</p>
+                  <div class="notebook-rule-line"></div>
+                  <p class="notebook-full-address">Jl. Jend. Sudirman No. 1, Desa Pemana, Kec. Alok, Kab. Sikka, Nusa Tenggara Timur</p>
+                  
+                  <div class="loc-btn-wrap">
+                    <a href="https://maps.google.com/?q=Lapangan+Desa+Pemana+Kab+Sikka+Nusa+Tenggara+Timur" target="_blank" class="btn-notebook-maps">
+                      <i class="fa-solid fa-map-location-dot"></i> Buka Google Maps
+                    </a>
+                  </div>
+                </div>
+
+              </div> <!-- /notebook-page-inner -->
+
+            </div> <!-- /spiral-notebook -->
+          </div>
+
+          <!-- Card Scene 5: Ayat Suci Al-Qur'an (Sticky Note) -->
+          <div class="narrative-card card-verse" id="cardVerse">
+            <div class="pin-decor">📌</div>
+            <div class="sticky-note-body">
+              <p class="arabic-text">
+                وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
+              </p>
+              <p class="verse-translation">
+                "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir."
+              </p>
+              <span class="verse-ref">QS. Ar-Rum: 21</span>
+            </div>
+          </div>
+
+          <!-- Card Scene 6: Grand Finale "Save The Date" -->
+          <div class="narrative-card card-finale" id="cardFinale">
+            <div class="finale-banner">
+              <span class="finale-tag">Save The Date</span>
+              <h1 class="finale-date">18 . 01 . 2026</h1>
+              <p class="finale-couplename">Rudi &amp; Tari</p>
+              <div class="finale-actions">
+                <button class="btn-primary-glow" id="btnOpenRsvpFromFinale">
+                  <i class="fa-solid fa-circle-check"></i> Konfirmasi Kehadiran
+                </button>
+                <button class="btn-secondary-glow" id="btnOpenGiftFromFinale">
+                  <i class="fa-solid fa-gift"></i> Kirim Hadiah
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- /narrative-cards-layer -->
+
+      </div> <!-- /viewport -->
+
+      <!-- Top Navigation & Audio Controller Bar -->
+      <header class="top-nav-bar">
+        <div class="nav-couple-brand">
+          <span class="brand-monogram">R&amp;T</span>
+          <span class="brand-names">Rudi &amp; Tari</span>
+        </div>
+        <div class="nav-actions">
+          <!-- Audio Play/Pause Button with Rotating Disc -->
+          <button class="btn-audio-disc" id="btnToggleAudio" title="Putar/Jeda Musik">
+            <div class="disc-vinyl" id="discVinyl">
+              <span class="disc-hole"></span>
+            </div>
+            <i class="fa-solid fa-music disc-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Bottom Cinematic Controller & Scene Progress -->
+      <footer class="bottom-controls-bar">
+        
+        <!-- Timeline Progress Bar -->
+        <div class="cinematic-progress-wrap">
+          <div class="progress-bar-bg" id="progressBarBg">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+          <div class="scene-dots-track" id="sceneDotsTrack">
+            <button class="scene-dot active" data-scene="0" title="Pembuka (Dove)"><i class="fa-solid fa-dove"></i></button>
+            <button class="scene-dot" data-scene="1" title="Tari (Mempelai Wanita)"><i class="fa-solid fa-person-dress"></i></button>
+            <button class="scene-dot" data-scene="2" title="Rudi (Mempelai Pria)"><i class="fa-solid fa-person"></i></button>
+            <button class="scene-dot" data-scene="3" title="Akad & Resepsi"><i class="fa-regular fa-calendar-days"></i></button>
+            <button class="scene-dot" data-scene="4" title="Lokasi Acara"><i class="fa-solid fa-map-pin"></i></button>
+            <button class="scene-dot" data-scene="5" title="Doa & Ayat"><i class="fa-solid fa-book-quran"></i></button>
+            <button class="scene-dot" data-scene="6" title="Save The Date"><i class="fa-solid fa-champagne-glasses"></i></button>
+          </div>
+        </div>
+
+        <!-- Interactive Quick Action Buttons -->
+        <div class="quick-action-dock">
+          <button class="dock-btn" id="btnReplayStory" title="Putar Ulang Video">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+            <span>Putar Ulang</span>
+          </button>
+          <button class="dock-btn" id="btnOpenRsvp" title="Konfirmasi Kehadiran">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <span>RSVP</span>
+          </button>
+          <button class="dock-btn" id="btnOpenGift" title="Amplop Digital / Hadiah">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Kirim Kado</span>
+          </button>
+          <button class="dock-btn" id="btnOpenWishes" title="Ucapan & Doa">
+            <i class="fa-solid fa-comments"></i>
+            <span>Ucapan</span>
+          </button>
+          <button class="dock-btn" id="btnShareInvite" title="Buat Tautan Tamu WhatsApp">
+            <i class="fa-solid fa-share-nodes"></i>
+            <span>Bagikan</span>
+          </button>
+        </div>
+
+      </footer>
+
+    </div> <!-- /phone-stage -->
+
+  </main>
+
+  <!-- ============================================== -->
+  <!-- 3. MODAL POPUPS                                -->
+  <!-- ============================================== -->
+
+  <!-- Modal RSVP -->
+  <div class="modal-overlay hidden" id="modalRsvp">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-envelope-circle-check"></i> Konfirmasi Kehadiran (RSVP)</h3>
+        <button class="modal-close" data-close="modalRsvp">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="formRsvp">
+          <div class="form-group">
+            <label for="rsvpName">Nama Lengkap</label>
+            <input type="text" id="rsvpName" required placeholder="Contoh: Budi Santoso & Keluarga">
+          </div>
+          <div class="form-group">
+            <label>Konfirmasi Kehadiran</label>
+            <div class="radio-pills">
+              <label class="radio-pill">
+                <input type="radio" name="rsvpStatus" value="Hadir" checked>
+                <span><i class="fa-solid fa-circle-check text-green"></i> Hadir</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="rsvpStatus" value="Ragu">
+                <span><i class="fa-solid fa-circle-question text-amber"></i> Masih Ragu</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="rsvpStatus" value="Tidak Hadir">
+                <span><i class="fa-solid fa-circle-xmark text-red"></i> Maaf, Berhalangan</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="rsvpGuests">Jumlah Tamu</label>
+            <select id="rsvpGuests">
+              <option value="1">1 Orang</option>
+              <option value="2" selected>2 Orang</option>
+              <option value="3">3 Orang</option>
+              <option value="4">4 Orang</option>
+              <option value="5+">5+ Orang</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="rsvpMessage">Doa &amp; Ucapan untuk Rudi &amp; Tari</label>
+            <textarea id="rsvpMessage" rows="3" placeholder="Tuliskan ucapan selamat dan doa restu terbaik Anda..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit-rsvp">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Konfirmasi &amp; Ucapan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tanda Kasih / Hadiah Digital -->
+  <div class="modal-overlay hidden" id="modalGift">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-gift"></i> Tanda Kasih (Amplop Digital)</h3>
+        <button class="modal-close" data-close="modalGift">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="gift-intro">Doa restu Anda merupakan karunia terindah bagi kami. Namun jika Anda bermaksud memberi tanda kasih, kami menyediakan amplop digital di bawah ini:</p>
+        
+        <!-- Bank Card 1: Rudi -->
+        <div class="bank-card">
+          <div class="bank-logo-row">
+            <span class="bank-chip"></span>
+            <span class="bank-name">BRI</span>
+          </div>
+          <div class="bank-account-num">
+            <span id="accNumRudi">8420 8912 34</span>
+            <button class="btn-copy" data-copy="8420891234" title="Salin Nomor Rekening">
+              <i class="fa-regular fa-copy"></i> Salin
+            </button>
+          </div>
+          <p class="bank-holder">a.n. <strong>HASRUDIN</strong></p>
+        </div>
+
+        <!-- Bank Card 2: Tari -->
+        <div class="bank-card bank-card-tari">
+          <div class="bank-logo-row">
+            <span class="bank-chip"></span>
+            <span class="bank-name">BRI</span>
+          </div>
+          <div class="bank-account-num">
+            <span id="accNumTari">1370 0192 8412 3</span>
+            <button class="btn-copy" data-copy="1370019284123" title="Salin Nomor Rekening">
+              <i class="fa-regular fa-copy"></i> Salin
+            </button>
+          </div>
+          <p class="bank-holder">a.n. <strong>SAPUTRI LESTARI</strong></p>
+        </div>
+
+        <!-- QRIS Info -->
+        <div class="qris-card">
+          <h4><i class="fa-solid fa-qrcode"></i> QRIS Pembayaran Digital</h4>
+          <p class="qris-sub">Dapat discan menggunakan GoPay, OVO, Dana, ShopeePay, atau Mobile Banking apa saja.</p>
+          <div class="qris-box">
+            <!-- Simulated QRIS Canvas / Vector -->
+            <div class="simulated-qr">
+              <i class="fa-solid fa-qrcode qris-large-icon"></i>
+              <span>QRIS - Rudi &amp; Tari</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ucapan Doa / Buku Tamu -->
+  <div class="modal-overlay hidden" id="modalWishes">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-comments"></i> Buku Tamu &amp; Ucapan Doa</h3>
+        <button class="modal-close" data-close="modalWishes">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="wishes-list" id="wishesContainer">
+          <!-- Populated dynamically by script.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pembuat Link WhatsApp / Generator -->
+  <div class="modal-overlay hidden" id="modalShare">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-share-nodes"></i> Bagikan Undangan ke Tamu</h3>
+        <button class="modal-close" data-close="modalShare">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="share-desc">Masukkan nama tamu yang ingin Anda undang. Tautan khusus dengan nama tamu akan dibuat secara otomatis:</p>
+        
+        <div class="form-group">
+          <label for="inputGuestShare">Nama Tamu / Sahabat</label>
+          <input type="text" id="inputGuestShare" placeholder="Contoh: Bpk. Bambang & Istri">
+        </div>
+
+        <div class="share-preview-box">
+          <label>Tautan Khusus Tamu:</label>
+          <div class="share-link-row">
+            <input type="text" id="generatedShareUrl" readonly>
+            <button class="btn-copy" id="btnCopyShareUrl"><i class="fa-regular fa-copy"></i> Salin Link</button>
+          </div>
+        </div>
+
+        <div class="share-preview-box mt-3">
+          <label>Pesan WhatsApp Siap Kirim:</label>
+          <textarea id="whatsappMessageText" rows="4" readonly></textarea>
+        </div>
+
+        <a id="btnSendWhatsapp" href="#" target="_blank" class="btn-wa-action">
+          <i class="fa-brands fa-whatsapp"></i> Kirim Langsung via WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ubah Nama Cepat (Pada Amplop) -->
+  <div class="modal-overlay hidden" id="modalCustomGuest">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-user-tag"></i> Atur Nama Tamu</h3>
+        <button class="modal-close" data-close="modalCustomGuest">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inputQuickGuest">Ketikkan Nama Tamu Penerima Undangan:</label>
+          <input type="text" id="inputQuickGuest" placeholder="Contoh: Budi Santoso / Sahabat Tercinta">
+        </div>
+        <button class="btn-submit-rsvp" id="btnApplyGuestName">
+          <i class="fa-solid fa-check"></i> Terapkan Nama Tamu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div class="toast-notice" id="toastNotice">
+    <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Teks berhasil disalin!</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
