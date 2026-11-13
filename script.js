@@ -575,31 +575,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- 8. RSVP & Guestbook Local Storage ---
-  const defaultWishes = [
-    {
-      name: 'H. Bambang & Keluarga',
-      status: 'Hadir',
-      message: 'Barakallahu lakuma wa baraka alaikuma wa jamaa bainakuma fii khair. Selamat untuk Rudi dan Tari! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.',
-      time: '1 jam yang lalu'
-    },
-    {
-      name: 'Dewi Lestari & Suami',
-      status: 'Hadir',
-      message: 'Selamat menempuh hidup baru sahabatku Tari & Mas Rudi! Semoga selalu rukun, bahagia dan segera dikaruniai momongan yang sholeh/sholehah.',
-      time: '3 jam yang lalu'
-    },
-    {
-      name: 'Rian Pratama',
-      status: 'Hadir',
-      message: 'Lancar sampai hari H brader Rudi! Doa terbaik untuk kalian berdua.',
-      time: 'Kemarin'
-    }
-  ];
+  // Kosongkan agar tidak ada komentar dummy/palsu bawaan
+  const defaultWishes = [];
 
   function loadWishes() {
     const saved = localStorage.getItem('rudi_tari_wishes');
     let list = defaultWishes;
-    if (saved) {
+    if (saved !== null) {
       try {
         list = JSON.parse(saved);
       } catch (e) {
@@ -614,7 +596,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
     container.innerHTML = '';
 
-    list.forEach(item => {
+    if (!list || list.length === 0) {
+      container.innerHTML = `
+        <div class="empty-wishes">
+          <i class="fa-regular fa-comment-dots"></i>
+          <p>Belum ada ucapan doa.<br>Jadilah yang pertama memberikan doa restu untuk Rudi &amp; Tari!</p>
+        </div>
+      `;
+      return;
+    }
+
+    list.forEach((item, index) => {
       const wishItem = document.createElement('div');
       wishItem.className = 'wish-item';
 
@@ -624,13 +616,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
       wishItem.innerHTML = `
         <div class="wish-header">
-          <span class="wish-author">${escapeHtml(item.name)}</span>
-          <span class="wish-badge ${badgeClass}">${escapeHtml(item.status)}</span>
+          <div class="wish-author-info">
+            <span class="wish-author">${escapeHtml(item.name)}</span>
+            <span class="wish-badge ${badgeClass}">${escapeHtml(item.status)}</span>
+          </div>
+          <button class="btn-delete-wish" data-index="${index}" title="Hapus ucapan ini">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
         </div>
         <p class="wish-text">${escapeHtml(item.message)}</p>
         <p class="wish-time">${item.time || 'Baru saja'}</p>
       `;
       container.appendChild(wishItem);
+    });
+
+    // Event listener untuk tombol hapus satuan
+    container.querySelectorAll('.btn-delete-wish').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-index'));
+        if (!isNaN(idx)) {
+          if (confirm('Hapus ucapan ini?')) {
+            list.splice(idx, 1);
+            localStorage.setItem('rudi_tari_wishes', JSON.stringify(list));
+            renderWishes(list);
+            showToast('Ucapan berhasil dihapus!');
+          }
+        }
+      });
+    });
+  }
+
+  // Event listener untuk tombol Hapus Semua di pojok atas modal
+  const btnClearAllWishes = document.getElementById('btnClearAllWishes');
+  if (btnClearAllWishes) {
+    btnClearAllWishes.addEventListener('click', () => {
+      const saved = localStorage.getItem('rudi_tari_wishes');
+      let currentList = [];
+      try { currentList = saved ? JSON.parse(saved) : []; } catch(e) {}
+      
+      if (!currentList || currentList.length === 0) {
+        showToast('Buku tamu sudah bersih (tidak ada ucapan).');
+        return;
+      }
+
+      if (confirm('Apakah Anda yakin ingin menghapus SEMUA ucapan di buku tamu?')) {
+        localStorage.setItem('rudi_tari_wishes', JSON.stringify([]));
+        renderWishes([]);
+        showToast('Semua ucapan berhasil dihapus!');
+      }
     });
   }
 
@@ -659,9 +693,9 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       const saved = localStorage.getItem('rudi_tari_wishes');
-      let list = defaultWishes;
+      let list = [];
       if (saved) {
-        try { list = JSON.parse(saved); } catch (e) { list = defaultWishes; }
+        try { list = JSON.parse(saved); } catch (e) { list = []; }
       }
       list.unshift(newWish);
       localStorage.setItem('rudi_tari_wishes', JSON.stringify(list));

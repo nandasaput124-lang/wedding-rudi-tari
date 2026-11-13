@@ -524,8 +524,13 @@
   <div class="modal-overlay hidden" id="modalWishes">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title"><i class="fa-solid fa-comments"></i> Buku Tamu &amp; Ucapan Doa</h3>
-        <button class="modal-close" data-close="modalWishes">&times;</button>
+        <h3 class="modal-title"><i class="fa-solid fa-comments"></i> Buku Tamu &amp; Ucapan</h3>
+        <div class="modal-header-actions">
+          <button id="btnClearAllWishes" class="btn-clear-wishes" title="Hapus Semua Ucapan">
+            <i class="fa-regular fa-trash-can"></i> Hapus Semua
+          </button>
+          <button class="modal-close" data-close="modalWishes">&times;</button>
+        </div>
       </div>
       <div class="modal-body">
         <div class="wishes-list" id="wishesContainer">
